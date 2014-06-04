@@ -1,7 +1,6 @@
 var events= require('events'),
   util= require('util'),
-  when= require('when'),
-  cc= require('ex-cathedra/chain')
+  when= require('when')
 
 var _emit= events.EventEmitter.prototype.emit
 
@@ -11,28 +10,31 @@ var _emit= events.EventEmitter.prototype.emit
   higher order classes compose on
 */
 function Pipe(){
-	this._send = new chain() // application sending data cc
-	this._recv = new chain() // receive event from network cc
+	this._send = [] // application sending data
+	this._recv = [] // receive event from network
 
 	Pipe.super_.call(this)
 
-	// provide a stock _recv handler that forwards messages as local events
+	// messages coming out of the pipe will be emitted
+	// here provide a base _recv handler that forwards messages as local events
 	var self = this
 	function recv(ev){
 		_emit.call(self, 'message', ev)
 	}
 	recv.owner= Pipe
-	this._recv.cc.push(recv)
-
-	// send calls into the _send chain
-	function send(data){
-		self._send.exec(data)
-	}
-	send.owner = Pipe
-	this.send= send
+	this._recv.push(recv)
 
 	return this
 }
 util.inherits(Pipe, events.EventEmitter)
+
+/**
+  Send messages into the pipe
+*/
+function send(data){
+	when.pipeline(this._send, data)
+}
+send.owner= Pipe
+Pipe.prototype.send= send
 
 module.exports = Pipe

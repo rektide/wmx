@@ -1,30 +1,37 @@
-var util= require('util')
+var util= require('util'),
+  cloneFunction= require('clone-function')
 var arrayReader= require('./wamp/arrayReader'),
   arrayWriter= require('./wamp/arrayWriter'),
   Pipe= require('./pipe')
+
+arrayWriter= cloneFunction(arrayWriter)
+arrayWriter.owner= CrossDocumentPipe
+arrayReader= cloneFunction(arrayReader)
+arrayReader.owner= CrossDocumentPipe
 
 /**
   Implements a pipe on a postMessage/message-eventTarget capable pipe
 */
 function CrossDocumentPipe(pipe){
 	CrossDocument.super_.call(this)
-	this.pipe= pipe
 
-	// push 'send' messages onto the pipe
-	function send(data){
-		var msg = arrayWriter(data)
-		pipe.postMessage(msg) // origin?
+	function postMessage(msg){
+		pipe.postMessage(msg)
 	}
-	send.owner= this
-	this._send.cc.push(send)
+	postMessage.owner= CrossDocumentPipe
+	// encode a 'send' message
+	// postMessage a 'send' message
+	this._send.push(arrayWriter, postMessage)
+
+	// decode _recv messages
+	this._recv.unshift(arrayReader)
 
 	// take network messages and execute them against _recv
-	var self= this
+	var _recv= this._recv
 	function recv(ev){
-		var msg= arrayReader(ev.data)
-		self._recv.exec(msg)
+		when.pipeline(_recv, ev)
 	}
-	recv.owner = this
+	recv.owner= CrossDocumentPipe
 	pipe.addEventListener('message', recv);
 
 	return this
