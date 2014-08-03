@@ -11,5 +11,13 @@
   "dependencies": {
     "clone-function": "^1.0.6",
     "when": "^3.2.2"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "chai-as-promised": "^4.1.1",
+    "grunt": "^0.4.5",
+    "grunt-mocha-selenium": "^0.8.1",
+    "grunt-nodemon": "^0.3.0",
+    "load-grunt-config": "^0.12.0"
   }
 }
