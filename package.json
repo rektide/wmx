@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test2": "browserify test/browser/**/*.js | testling -x chrome",
-    "test": "browserify test/browser/**/*.js | tape-run -b chrome"
+    "test2": "browserify --debug test/browser/**/*.js | testling -x chrome",
+    "test": "browserify --debug test/browser/**/*.js | tape-run -b chrome"
   },
   "author": "",
   "license": "",
