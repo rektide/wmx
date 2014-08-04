@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test2": "browserify test/browser/**/*.js | testling -x chrome",
+    "test": "browserify test/browser/**/*.js | tape-run -b chrome"
   },
   "author": "",
   "license": "",
@@ -13,12 +14,9 @@
     "when": "^3.2.2"
   },
   "devDependencies": {
-    "chai": "^1.9.1",
-    "chai-as-promised": "^4.1.1",
-    "grunt": "^0.4.5",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-mocha-selenium": "^0.8.1",
-    "grunt-nodemon": "^0.3.0",
-    "load-grunt-config": "^0.12.0"
+    "blue-tape": "^0.1.7",
+    "browserify": "^5.9.1",
+    "tape-run": "^0.2.0",
+    "testling": "^1.7.0"
   }
 }

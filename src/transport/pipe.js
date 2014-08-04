@@ -1,6 +1,7 @@
 var events= require('events'),
   util= require('util')
-var when= require('when')
+var when= require('when'),
+  pipeline= require('when/pipeline')
 
 var _emit= events.EventEmitter.prototype.emit
 
@@ -30,7 +31,7 @@ util.inherits(Pipe, events.EventEmitter)
   Send messages into the pipe
 */
 function send(data){
-	when.pipeline(this._send, data)
+	pipeline(this._send, data)
 }
 send.owner= Pipe
 Pipe.prototype.send= send

@@ -1,14 +1,14 @@
 var util= require('util')
 var cloneFunction= require('clone-function')
-var arrayReader= require('./wamp/arrayReader'),
-  arrayWriter= require('./wamp/arrayWriter'),
+var arrayReader= require('../wamp/array-reader'),
+  arrayWriter= require('../wamp/array-writer'),
   Pipe= require('./pipe')
 
 /**
   Implements a pipe on a postMessage/message-eventTarget capable pipe
 */
 function CrossDocumentPipe(pipe){
-	CrossDocument.super_.call(this)
+	CrossDocumentPipe.super_.call(this)
 
 	var _arrayWriter= cloneFunction(arrayWriter),
 	  _arrayReader= cloneFunction(arrayReader)
