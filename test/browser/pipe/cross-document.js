@@ -21,7 +21,7 @@ test("CrossDocumentPipe sending", function(t){
 	return done.promise
 })
 
-/*
+
 test("CrossDomainPipe receiving", function(t){
 	var channel= new MessageChannel(),
 	  pipe= new cross(channel.port1),
@@ -33,6 +33,6 @@ test("CrossDomainPipe receiving", function(t){
 		done.resolve()
 	})
 	port2.postMessage([msgs.Hello.messageType, realm, {details:{}}])
+	channel.port1.start()
 	return done.promise
 })
-*/

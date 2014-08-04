@@ -1,5 +1,6 @@
-var util= require('util')
-var cloneFunction= require('clone-function')
+var util= require('util'),
+  cloneFunction= require('clone-function'),
+  pipeline= require('when/pipeline')
 var arrayReader= require('../wamp/array-reader'),
   arrayWriter= require('../wamp/array-writer'),
   Pipe= require('./pipe')
@@ -29,7 +30,7 @@ function CrossDocumentPipe(pipe){
 	// take network messages and execute them against _recv
 	var _recv= this._recv
 	function recv(ev){
-		when.pipeline(_recv, ev)
+		pipeline(_recv, ev.data)
 	}
 	recv.owner= this
 	pipe.addEventListener('message', recv);

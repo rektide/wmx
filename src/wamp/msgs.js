@@ -17,6 +17,7 @@ function msg(name, messageType, fields, fieldTypes, flags){
 	fn.messageType= messageType
 	fn.fields= fields
 	fn.fieldTypes= fieldTypes
+	fn.name= name
 	for(var j in FLAGS){
 		if(flags & FLAGS[j]){
 			fn[j]= true

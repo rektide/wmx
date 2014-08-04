@@ -17,7 +17,8 @@ function Pipe(){
 	// here provide a base _recv handler that forwards messages as local events
 	var self = this
 	function recv(ev){
-		_emit.call(self, 'message', ev)
+		var name = ev.messageType ? ev.messageType : 'message'
+		_emit.call(self, name, ev)
 	}
 	recv.owner= this
 
