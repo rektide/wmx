@@ -1,8 +1,34 @@
 var util= require('util')
-var when= require('when')
-var abortSnoop= require('./abort-snoop'),
-  pipeline2= require('./_pipeline2'),
+var abortSnoop= require('../util/abort-snoop'),
+  pipeline2= require('../util/pipeline2'),
   wamp= require('./wamp/msgs')
+
+module.exports= ClientHelloer
+
+/**
+  Assign default elements to the hello
+*/
+function helloDefaults(hello){
+	hello.realm= this.realm
+	hello.details.roles= this.roles
+	return hello
+}
+
+/**
+  Send the hello
+*/
+function sendHello(hello){
+	var msg= new wamp.Hello(hello.realm, hello.details)
+	hello.pipe.send(msg)
+	return hello
+}
+
+/**
+  Forward along/emit a returning welcome
+*/
+function welcomed(welcome){
+	this.emit(msgs.Welcome.messageType, welcome)
+}
 
 // modes: maintain only one session, report all
 function ClientHelloer(pipe, realm, roles){
@@ -10,44 +36,12 @@ function ClientHelloer(pipe, realm, roles){
 	var self = this
 	this.realm = realm || ''
 	this.roles = roles || {caller:{}}
-	this._hello= [this.realmGenerator, this.clientRoleGenerator]
-	this._session= []
 
-	// completion handlers for hello-sender, after _hello
-	this._helloOk = function(ctx){
-		ctx.pipe.send(new wamp.Hello(ctx.realm, ctx.details))
-	}
-	// if the _hello pipeline fails:
-	this._helloFail = function(ctx){
-		self.emit('badhello', ctx)
-	}
+	makePipeline(this, 'hello', helloDefaults, sendHello)
+	makePipeline(this, 'welcomer', welcomed)
 
 	// snoop on abort events send out on pipe
 	this._abortSnoop= abortSnoop(this, true)
-
-	// completions for sessionizer
-	function _sessionOk(ctx){
-		self.emit('welcome', ctx)
-	}
-	function _sessionAbort(ctx){
-		self.emit('abort', ctx)
-	}
-
-	// sessionizer: listen for replying welcome, emit session
-	function _sessionizer(welcome){
-		if(welcome instanceof wamp.Abort){
-			var ctx= {abort:welcome, clientAbort: false}
-			self.emit('abort', ctx)
-			return
-		}
-		if(!(welcome instanceof wamp.Welcome)){
-			return
-		}
-		var ctx= {welcome:welcome, pipe:this}
-		pipeline2(self._session, self, ctx).then(_sessionOk, _sessionAbort)
-	}
-	_sessionizer.owner= this
-	this._sessionizer= _sessionizer
 
 	// add pipe
 	if(pipe)
@@ -57,32 +51,19 @@ util.inherits(ClientHelloer, events.EventEmiter)
 
 ClientHelloer.prototype.addPipe= function(pipe){
 	// listen for our Welcomes
-	pipe.addEventListener('message', this._sessionizer)
+	this.addListener(msgs.Welcome.messageType, this.welcomer)
 
-	// snoop on abort events sent ut on pipe
+	// snoop on abort events sent out on pipe
 	this._abortSnoop.addPipe(pipe)
 
 	// send a hello
-	var ctx= {realm:null, roles:{}, pipe:pipe}
-	pipeline2(this._hello, this, ctx).then(this._helloOk, this._helloFail)
+	var ctx= {realm:null, details:{}, pipe:pipe}
+	this.hello(ctx)
 }
 
 ClientHelloer.prototype.removePipe= function(pipe){
-	// clear sessionizer
-	pipe.removeEventListener('message', this._sessionizer)
+	this.removeListener(msgs.Welcome.messageType, this.welcomer)
+
 	// clear out abortSnoops
 	this._abortSnoop.removePipe(pipe)
 }
-
-function realmGenerator(ctx){
-	ctx.realm= this.realm
-}
-realmGenerator.owner= ClientHelloer
-ClientHelloer.prototype.realmGenerator= realmGenerator
-
-function clientRoleGenerator(ctx){
-	ctx.roles= this.roles
-}
-ClientHelloer.prototype.clientRoleGenerator= clientRoleGenerator
-
-module.exports= ClientHelloer

@@ -2,12 +2,17 @@ var events= require('events'),
   util= require('util')
 var pipeline= require('../lib/pipeline2')
 
+module.exports = Pipe
+
 /**
   Emit a message, by it's `messageType` if it has one, else as 'message'.
 */
-function recv(e){
-	var name = e.messageType || 'message'
-	this.emit(name, e)
+function emitReceived(e){
+	if(e){
+		var name = e.messageType || 'message'
+		this.emit(name, e)
+	}
+	return e
 }
 
 /**
@@ -18,9 +23,8 @@ function recv(e){
 function Pipe(){
 	Pipe.super_.call(this)
 	makePipeline(this, 'send') // application sending data into pipe
-	makePipeline(this, 'recv', recv) // receive data from pipe
+	makePipeline(this, 'recv', emitReceived) // receive data from pipe
 	return this
 }
 util.inherits(Pipe, events.EventEmitter)
 
-module.exports = Pipe

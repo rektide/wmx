@@ -1,9 +1,21 @@
 var util= require('util'),
-  cloneFunction= require('clone-function'),
-  pipeline= require('when/pipeline')
+  cloneFunction= require('clone-function')
 var arrayReader= require('../wamp/array-reader'),
   arrayWriter= require('../wamp/array-writer'),
+  pipeline= require('../util/pipeline2'),
   Pipe= require('./pipe')
+
+module.exports = CrossDocumentPipe
+
+function messageReader(e){
+	if(e && e.currentTarget && e.data.length){
+		var msg = arrayReader(e.data)
+		msg.pipe = e.currentTarget
+		return msg
+	} else {
+		return e
+	}
+}
 
 /**
   Implements a pipe on a postMessage/message-eventTarget capable pipe
@@ -11,32 +23,18 @@ var arrayReader= require('../wamp/array-reader'),
 function CrossDocumentPipe(pipe){
 	CrossDocumentPipe.super_.call(this)
 
-	var _arrayWriter= cloneFunction(arrayWriter),
-	  _arrayReader= cloneFunction(arrayReader)
-	_arrayWriter.owner= this
-	_arrayReader.owner= this
-
 	function postMessage(msg){
 		pipe.postMessage(msg)
 	}
-	postMessage.owner= this
-	// encode a 'send' message
-	// postMessage a 'send' message
-	this._send.push(arrayWriter, postMessage)
+	// encode, then postMessage a 'send' message
+	this._send.push(cloneFunction(arrayWriter), postMessage)
 
 	// decode _recv messages
-	this._recv.unshift(arrayReader)
+	this._recv.unshift(messageReader)
 
 	// take network messages and execute them against _recv
-	var _recv= this._recv
-	function recv(ev){
-		pipeline(_recv, ev.data)
-	}
-	recv.owner= this
-	pipe.addEventListener('message', recv);
+	pipe.addEventListener('message', this.recv);
 
 	return this
 }
 util.inherits(CrossDocumentPipe, Pipe)
-
-module.exports = CrossDocumentPipe
