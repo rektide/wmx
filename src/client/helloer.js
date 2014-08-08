@@ -1,7 +1,8 @@
-var util= require('util')
+var events= require('events'),
+  util= require('util')
 var abortSnoop= require('../util/abort-snoop'),
-  pipeline2= require('../util/pipeline2'),
-  wamp= require('./wamp/msgs')
+  makePipeline= require('../util/make-pipeline'),
+  msgs= require('../wamp/msgs')
 
 module.exports= ClientHelloer
 
@@ -18,7 +19,7 @@ function helloDefaults(hello){
   Send the hello
 */
 function sendHello(hello){
-	var msg= new wamp.Hello(hello.realm, hello.details)
+	var msg= new msgs.Hello(hello.realm, hello.details)
 	hello.pipe.send(msg)
 	return hello
 }
@@ -47,22 +48,22 @@ function ClientHelloer(pipe, realm, roles){
 	if(pipe)
 		this.addPipe(pipe)
 }
-util.inherits(ClientHelloer, events.EventEmiter)
+util.inherits(ClientHelloer, events.EventEmitter)
 
 ClientHelloer.prototype.addPipe= function(pipe){
 	// listen for our Welcomes
-	this.addListener(msgs.Welcome.messageType, this.welcomer)
+	pipe.addListener(msgs.Welcome.messageType, this.welcomer)
 
 	// snoop on abort events sent out on pipe
 	this._abortSnoop.addPipe(pipe)
 
 	// send a hello
-	var ctx= {realm:null, details:{}, pipe:pipe}
-	this.hello(ctx)
+	var helloMsg= {realm:null, details:{}, pipe:pipe}
+	this.hello(helloMsg)
 }
 
 ClientHelloer.prototype.removePipe= function(pipe){
-	this.removeListener(msgs.Welcome.messageType, this.welcomer)
+	pipe.removeListener(msgs.Welcome.messageType, this.welcomer)
 
 	// clear out abortSnoops
 	this._abortSnoop.removePipe(pipe)

@@ -4,12 +4,12 @@ var test= require("blue-tape"),
   cross= require("../../../src/transport/cross-document"),
   arrayWriter= require("../../../src/wamp/array-writer")
 
-var realm= "realm:basic"
+var realm= "realm:basic",
+  details= {special:"bits"}
 
 test("CrossDocumentPipe sending", function(t){
 	var channel = new MessageChannel(),
 	  pipe= new cross(channel.port1),
-	  details= {special:"bits"},
 	  done= when.defer()
 	channel.port2.onmessage= function(msg){
 		t.equal(msg.data[0], msgs.Hello.messageType, "Hello transmitted")
@@ -28,7 +28,6 @@ test("CrossDomainPipe receiving", function(t){
 	var channel= new MessageChannel(),
 	  pipe= new cross(channel.port1),
 	  port2= channel.port2,
-	  details= {special:"bits"},
 	  done= when.defer()
 	pipe.on(msgs.Hello.messageType, function(msg){
 		t.ok(msg instanceof msgs.Hello, "a Hello received")

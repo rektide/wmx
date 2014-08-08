@@ -1,3 +1,4 @@
+var util= require('util')
 var pipeline2 = require('./pipeline2')
 
 module.exports = makePipeline

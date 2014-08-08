@@ -1,5 +1,4 @@
-var util= require("util")
-  msgs= require("./msgs")
+var msgs= require("./msgs")
 
 var byId= {}
 for(var i in msgs){

@@ -1,11 +1,13 @@
+var msgs= require('../wamp/msgs')
+
 function makeAbortSnoop(self, clientAbort){
 	if(!clientAbort)
 		clientAbort= false
 
 	// snoop on abort events send out on pipe
 	function _abortSnoop(abort){
-		if(!(data instanceof wamp.Abort))
-			return
+		if(!(abort instanceof msgs.Abort))
+			return abort
 		var ctx= {abort:abort, clientAbort: clientAbort, pipe:this}
 		self.emit('abort', ctx)
 	}
@@ -29,3 +31,5 @@ function makeAbortSnoop(self, clientAbort){
 
 	return _abortSnoop
 }
+
+module.exports= makeAbortSnoop
