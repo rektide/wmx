@@ -10,7 +10,6 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "clone-function": "^1.0.6",
     "when": "^3.2.2"
   },
   "devDependencies": {

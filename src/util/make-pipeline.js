@@ -1,4 +1,3 @@
-var cloneFunction = require('clone-function')
 var pipeline2 = require('./pipeline2')
 
 module.exports = makePipeline
@@ -17,11 +16,12 @@ function makePipeline(obj, slot /*, fns__ */){
 		var _slot= '_'+slot
 		obj[_slot]= pipe
 		fn= function(a,b,c,d){
-			pipeline2(obj[_slot], obj, a, b, c, d)
+			return pipeline2(obj[_slot], obj, a, b, c, d)
 		}
+		obj[slot]= fn
 	}else{
 		fn= function(a,b,c,d){
-			pipeline2(pipe, obj, a, b, c, d)
+			return pipeline2(pipe, obj, a, b, c, d)
 		}
 	}
 

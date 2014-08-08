@@ -1,6 +1,6 @@
 var events= require('events'),
   util= require('util')
-var pipeline= require('../lib/pipeline2')
+var makePipeline= require('../util/make-pipeline')
 
 module.exports = Pipe
 
@@ -27,4 +27,3 @@ function Pipe(){
 	return this
 }
 util.inherits(Pipe, events.EventEmitter)
-

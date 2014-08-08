@@ -1,8 +1,6 @@
-var util= require('util'),
-  cloneFunction= require('clone-function')
+var util= require('util')
 var arrayReader= require('../wamp/array-reader'),
   arrayWriter= require('../wamp/array-writer'),
-  pipeline= require('../util/pipeline2'),
   Pipe= require('./pipe')
 
 module.exports = CrossDocumentPipe
@@ -27,7 +25,7 @@ function CrossDocumentPipe(pipe){
 		pipe.postMessage(msg)
 	}
 	// encode, then postMessage a 'send' message
-	this._send.push(cloneFunction(arrayWriter), postMessage)
+	this._send.push(arrayWriter, postMessage)
 
 	// decode _recv messages
 	this._recv.unshift(messageReader)

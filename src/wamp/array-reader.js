@@ -25,4 +25,7 @@ function arrayReader(arr){
 	var fn= byId[arr[0]]
 	return new fn(arr)
 }
+arrayReader.owner= "wamp"
+
 module.exports= arrayReader
+module.exports.arrayReader= arrayReader

@@ -21,4 +21,13 @@ function arrayWriter(msg){
 	var fn= byId[msg.messageType]
 	return new fn(msg)
 }
+arrayWriter.owner= "wamp"
+
+function safeArrayWriter(msg){
+	return msg.messageType ? byId[msg.messageType](msg) : msg
+}
+safeArrayWriter.owner= "wamp"
+
 module.exports= arrayWriter
+module.exports.arrayWriter= arrayWriter
+module.exports.safeArrayWriter= safeArrayWriter
