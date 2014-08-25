@@ -38,11 +38,12 @@ define(function(require) {
 			runTask = function(arg, task) {
 				return task.call(self, arg);
 			};
-
 			return task.apply(self, args);
 		};
 
-		return all(slice.call(arguments, 2)).then(function(args) {
+		var argsIn = slice.call(arguments, 2)
+		argsIn.push(this)
+		return all(argsIn).then(function(args) {
 			return when.reduce(tasks, function(arg, task) {
 				return runTask(arg, task);
 			}, args);
