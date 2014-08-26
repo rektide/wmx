@@ -13,6 +13,7 @@ module.exports.makePipeline = makePipeline
 function makePipeline(obj, slot /*, fns__ */){
 	var pipe= Array.prototype.splice.call(arguments, 2)
 	var fn
+	var updateConstructor= false
 	if(slot){
 		var _slot= '_'+slot
 		obj[_slot]= pipe
@@ -20,6 +21,12 @@ function makePipeline(obj, slot /*, fns__ */){
 			return pipeline2(obj[_slot], obj, a, b, c, d)
 		}
 		obj[slot]= fn
+		if(pipe.length && !obj.constructor[slot]){
+			// create constructor links, since we have a pipeline with elements 
+			// & no pre-existing links defined on constructor now
+			updateConstructor= true
+			obj.constructor[slot]= {}
+		}
 	}else{
 		fn= function(a,b,c,d){
 			return pipeline2(pipe, obj, a, b, c, d)
@@ -29,10 +36,27 @@ function makePipeline(obj, slot /*, fns__ */){
 	// helper: link the pipeline to it's executor
 	fn._pipe= pipe
 
-	// helper: assign 'owner' property to all pipeline handlers
 	for(var i= 0; i< pipe.length; ++i){
-		if(!pipe[i].owner)
-			pipe[i].owner= obj.constructor.name
+		var pipeHandler= pipe[i]
+		if(!pipeHandler)
+			continue
+
+		// helper: assign 'owner' property to all pipeline handlers
+		var objName= obj.constructor.name
+		if(!pipeHandler.owner && objName)
+			pipeHandler.owner= objNAme
+
+		// create static links on constructor if none exist
+		if(updateConstructor){
+			// helper: link pipeline helper onto constructor, by index
+			obj.constructor[slot][i]= pipeHandler
+
+			// helper: link pipeline handlers onto constructor, by name
+			var pipeName= pipeHandler.name
+			if(slot && pipeName){
+				obj.constructor[slot][pipeName]= pipeHandler
+			}
+		} // else pipe is anonymous, or has helpers of some variety defined
 	}
 
 	return fn
