@@ -17,6 +17,8 @@ for(var i in msgs){
 }
 
 function arrayWriter(msg){
+	if(!msg || !msg[0])
+		return
 	var fn= byId[msg.messageType]
 	return new fn(msg)
 }

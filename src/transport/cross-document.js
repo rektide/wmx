@@ -22,7 +22,8 @@ function CrossDocumentPipe(pipe){
 	CrossDocumentPipe.super_.call(this)
 
 	function postMessage(msg){
-		pipe.postMessage(msg)
+		if(msg)
+			pipe.postMessage(msg)
 	}
 	// encode, then postMessage a 'send' message
 	this._send.push(arrayWriter, postMessage)
