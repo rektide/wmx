@@ -36,9 +36,9 @@ define(function(require) {
 		// args using apply, but subsequence tasks via direct invocation
 		var runTask = function(args, task) {
 			runTask = function(arg, task) {
-				return task.call(self, arg);
+				return arg === undefined ? task.call(self, arg) : undefined;
 			};
-			return task.apply(self, args);
+			return args === undefined ? task.apply(self, args) : undefined;
 		};
 
 		var argsIn = slice.call(arguments, 2)
