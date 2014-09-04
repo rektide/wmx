@@ -7,64 +7,104 @@ var abortSnoop= require('../util/abort-snoop'),
 module.exports= ClientHelloer
 
 /**
-  Assign default elements to the hello
+  Accept pipe and build a hello context
 */
-function helloDefaults(hello){
-	hello.realm= this.realm
+function helloDefaults(pipe){
+	var hello= {
+		pipe: pipe,
+		realm: this.realm,
+		details: this.details|| {},
+		welcome: when.defer()
+	}
 	hello.details.roles= this.roles
+	return hello
+}
+
+/**
+  Listen for a returning Welcome/Abort, or outgoing Abort
+*/
+function awaitReply(hello){
+	var defer= hello.welcome
+
+	// listen for incoming replies
+	var recv= hello.pipe._recv,
+	  i= recv.length-1
+	while(i >= 0){
+		if(recv[i].name == 'emitReceived')
+			break
+		i--
+	}
+	if(i == -1)
+		i= recv.length-1
+	var listenIngress= (function listenIngress(msg){
+		if(msg.messageType == msgs.Welcome.messageType && !msg.hello){
+			msg.hello= hello
+			defer.resolve(msg)
+		}
+		if(msg.messageType == msgs.Abort.messageType && !msg.hello){
+			msg.hello= hello
+			defer.reject(msg)
+		}
+		return msg
+	  })
+	recv.splice(i, 0, listenIngress)
+
+	// listen for if we send an abort
+	var listenOutgress= (function listenOutgress(msg){
+		if(msg.messageType == msgs.Abort.messageType && !msg.hello){
+			msg.hello= hello
+			defer.reject(msg)
+		}
+		return msg
+	})
+	var send= hello.pipe._send
+	send.splice(send.length-1, 0, listenOutgress)
+
+	// clean up listeners when done
+	defer.promise.finally(function(){
+		for(var j= recv.length-1; j>= 0; --j){
+			if(recv[j] == listenIngress){
+				recv.splice(j, 1)
+				break
+			}
+		}
+		for(var k= send.length-1; k>= 0; --k){
+			if(send[k] == listenOutgress){
+				send.splice(k, 1)
+				return
+			}
+		}
+	})
+
 	return hello
 }
 
 /**
   Send the hello
 */
-function sendHello(hello){
+function sendHelloDefaults(hello){
 	var msg= new msgs.Hello(hello.realm, hello.details)
 	hello.pipe.send(msg)
 	return hello
 }
 
 /**
-  Forward along/emit a returning welcome
+  Return the promise for the return Welcome
 */
-function welcomed(welcome){
-	this.emit(msgs.Welcome.messageType, welcome)
+function returnWelcome(hello){
+	return hello.welcome
 }
 
-// modes: maintain only one session, report all
-function ClientHelloer(pipe, realm, roles){
+/**
+  ClientHelloer is a base class that tries to solicit a Welcome by sending a Hello
+*/
+function ClientHelloer(realm, roles){
 	ClientHelloer.super_.call(this)
 	var self = this
 	this.realm = realm || ''
 	this.roles = roles || {caller:{}}
 
-	makePipeline(this, 'hello', helloDefaults, sendHello)
-	makePipeline(this, 'welcomer', welcomed)
-
-	// snoop on abort events send out on pipe
-	this._abortSnoop= abortSnoop(this, true)
-
-	// add pipe
-	if(pipe)
-		this.addPipe(pipe)
+	makePipeline(this, 'sendHello', helloDefaults, awaitReply, sendHello, returnWelcome)
+	return this
 }
 util.inherits(ClientHelloer, events.EventEmitter)
-
-ClientHelloer.prototype.addPipe= function(pipe){
-	// listen for our Welcomes
-	pipe.addListener(msgs.Welcome.messageType, this.welcomer)
-
-	// snoop on abort events sent out on pipe
-	this._abortSnoop.addPipe(pipe)
-
-	// send a hello
-	var helloMsg= {realm:null, details:{}, pipe:pipe}
-	this.hello(helloMsg)
-}
-
-ClientHelloer.prototype.removePipe= function(pipe){
-	pipe.removeListener(msgs.Welcome.messageType, this.welcomer)
-
-	// clear out abortSnoops
-	this._abortSnoop.removePipe(pipe)
-}
