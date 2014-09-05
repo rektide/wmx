@@ -31,18 +31,18 @@ define(function(require) {
 	 * @param [initialArgs...] {*} arguments to be passed to the first task
 	 * @return {Promise} promise for return value of the final task
 	 */
-	return function pipeline(tasks, self /* initialArgs... */) {
+	return function pipeline(tasks, self, self2 /* initialArgs... */) {
 		// Self-optimizing function to run first task with multiple
 		// args using apply, but subsequence tasks via direct invocation
 		var runTask = function(args, task) {
 			runTask = function(arg, task) {
-				return arg === undefined ? task.call(self, arg) : undefined;
+				return task.call(self, arg);
 			};
-			return args === undefined ? task.apply(self, args) : undefined;
+			return task.apply(self, args);
 		};
 
-		var argsIn = slice.call(arguments, 2)
-		argsIn.push(this)
+		var argsIn = slice.call(arguments, 3, arguments.length-3)
+		argsIn.push(self2)
 		return all(argsIn).then(function(args) {
 			return when.reduce(tasks, function(arg, task) {
 				return runTask(arg, task);

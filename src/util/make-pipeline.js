@@ -18,7 +18,7 @@ function makePipeline(obj, slot /*, fns__ */){
 		var _slot= '_'+slot
 		obj[_slot]= pipe
 		fn= function(a,b,c,d){
-			return pipeline2(obj[_slot], obj, a, b, c, d)
+			return pipeline2(obj[_slot], obj, this, a, b, c, d)
 		}
 		obj[slot]= fn
 		if(pipe.length && !obj.constructor[slot]){
@@ -29,7 +29,7 @@ function makePipeline(obj, slot /*, fns__ */){
 		}
 	}else{
 		fn= function(a,b,c,d){
-			return pipeline2(pipe, obj, a, b, c, d)
+			return pipeline2(pipe, obj, this, a, b, c, d)
 		}
 	}
 
@@ -44,7 +44,7 @@ function makePipeline(obj, slot /*, fns__ */){
 		// helper: assign 'owner' property to all pipeline handlers
 		var objName= obj.constructor.name
 		if(!pipeHandler.owner && objName)
-			pipeHandler.owner= objNAme
+			pipeHandler.owner= objName
 
 		// create static links on constructor if none exist
 		if(updateConstructor){

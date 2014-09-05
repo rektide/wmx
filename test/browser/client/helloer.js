@@ -16,19 +16,19 @@ var realm= 'helloer_test_realm',
 test('Helloer', function(t){
 	var channel= new MessageChannel(),
 	  pipe= new cross(channel.port1)
-	  helloer= new helloer(pipe),
-	  sent= when.defer(),
-	  received= when.defer()
+	  helloer= new helloer(),
+	  sent= when.defer()
 
 	channel.port2.onmessage= function(e){
 		var msg= arrayReader(e.data)
 		t.ok(msg instanceof msgs.Hello, 'hello received')
-		t.equal(received.promise.inspect().state, 'pending', 'not yet welcomed')
+		//t.equal(received.promise.inspect().state, 'pending', 'not yet welcomed')
 		channel.port2.postMessage([msgs.Welcome.messageType, sessionId, details])
 		sent.resolve()
 	}
-	helloer.on(msgs.Welcome.messageType, received.resolve.bind(received))
+	var welcome = helloer.sendHello(pipe).then(function(msg){
+		t.equal(msg.messageType, msgs.Welcome.messageType, 'welcome reply received')
+	})
 	channel.port1.start()
-	return when.join(sent.promise, received.promise)
-	
+	return when.join(sent.promise, welcome)
 })

@@ -1,5 +1,6 @@
 var events= require('events'),
   util= require('util')
+var when= require('when')
 var abortSnoop= require('../util/abort-snoop'),
   makePipeline= require('../util/make-pipeline'),
   msgs= require('../wamp/msgs')
@@ -82,7 +83,7 @@ function awaitReply(hello){
 /**
   Send the hello
 */
-function sendHelloDefaults(hello){
+function sendHello(hello){
 	var msg= new msgs.Hello(hello.realm, hello.details)
 	hello.pipe.send(msg)
 	return hello
@@ -92,7 +93,7 @@ function sendHelloDefaults(hello){
   Return the promise for the return Welcome
 */
 function returnWelcome(hello){
-	return hello.welcome
+	return hello.welcome.promise
 }
 
 /**
