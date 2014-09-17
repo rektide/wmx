@@ -1,3 +1,5 @@
+"use strict";
+
 var test= require('blue-tape'),
   when= require('when')
 var arrayReader= require('../../../src/wamp/array-reader'),
@@ -5,29 +7,36 @@ var arrayReader= require('../../../src/wamp/array-reader'),
   cross= require('../../../src/transport/cross-document'),
   helloer= require('../../../src/client/helloer')
 
+
 var realm= 'helloer_test_realm',
   sessionId= 'helloer_test_session',
-  details= {
-     special: 'bits',
-	role: {
-		dealer: {
-  }}}
+  dealer= {
+    special: 'bits',
+    roles: {
+      dealer: {}
+  }},
+  broker= {
+    roles: {
+      broker: {}
+  }}
 
 test('Helloer', function(t){
 	var channel= new MessageChannel(),
-	  pipe= new cross(channel.port1)
-	  helloer= new helloer(),
+	  pipe= new cross(channel.port1),
+	  helloer_= new helloer(),
 	  sent= when.defer()
 
 	channel.port2.onmessage= function(e){
 		var msg= arrayReader(e.data)
 		t.ok(msg instanceof msgs.Hello, 'hello received')
+		t.ok(msg.details && msg.details.roles, 'hello has roles')
 		//t.equal(received.promise.inspect().state, 'pending', 'not yet welcomed')
-		channel.port2.postMessage([msgs.Welcome.messageType, sessionId, details])
+		channel.port2.postMessage([msgs.Welcome.messageType, sessionId, dealer])
 		sent.resolve()
 	}
-	var welcome = helloer.sendHello(pipe).then(function(msg){
+	var welcome = helloer_.sendHello(pipe).then(function(msg){
 		t.equal(msg.messageType, msgs.Welcome.messageType, 'welcome reply received')
+		t.ok(msg.details && msg.details.roles && msg.details.roles.dealer, 'welcome has dealer role')
 	})
 	channel.port1.start()
 	return when.join(sent.promise, welcome)

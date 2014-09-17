@@ -11,6 +11,7 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "lodash": "^2.4.1",
     "when": "^3.2.2"
   },
   "devDependencies": {
