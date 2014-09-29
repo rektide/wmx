@@ -1,6 +1,7 @@
 'use strict'
 
-var msgs= require('./msgs')
+var msgs= require('./msgs'),
+  makeProperty= require('../util/make-property')
 
 module.exports= {}
 
@@ -10,19 +11,7 @@ for(var i in msgs){
 	  properties= {}
 	for(var j= 0; j< msg.fields.length; ++j){
 		var fieldName= msg.fields[j],
-		  property= (function(n){
-			return {
-				get: function(){
-					return this[n]
-				},
-				set: function(value){
-					this[n]= value
-					return this
-				},
-				configurable: false,
-				enumerable: true
-			}
-		})(fieldName, j)
+		  property= makeProperty('this['+j+']')
 		properties[fieldName]= property
 	}
 	(function(msg, properties){
