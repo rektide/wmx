@@ -1,3 +1,7 @@
+'use strict';
+
+var Body= require('./body')
+
 /*
 typedef (Request or ScalarValueString) RequestInfo;
 
@@ -27,3 +31,17 @@ dictionary RequestInit {
 enum RequestMode { "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
 */
+
+module.exports= Request
+
+function Request(){
+	Body.mixin(this)
+}
+
+Request.mixin= (function mixin(o){
+	Body.mixin(o)
+	for(var i in Reqest.prototype){
+		o[i]= Request.prototype[i]
+	}
+	return o
+})

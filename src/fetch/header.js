@@ -35,7 +35,8 @@ function Headers(map, guards){
 	/*if(map && map.getAll){
 		// no way to iterate inputted Headers without messy deep cloning, yuck!
 		// structural cloning is last
-	}else*/ if(map && map.length){
+	}else*/
+	if(map && map.length){
 		for(var i= 0; i < map.length; ++i){
 			var el= map[i]
 			if(!el || el.length != 2)
@@ -46,41 +47,41 @@ function Headers(map, guards){
 		for(var i in map)
 			this[i]= map[i]
 	}
-	if(guards){
-		this.guards= guards
-	}
+	if(guards) this.guards= guards
 	return this
 }
 
-Headers.prototype.append= (function append(name, value){
-	if(asserts){
-		var forbidden = this._isFobidden(name, value)
-		if(err.message)
-			throw err
-		if(err)
-			return
+Headers.mixin= (function mixin(o){
+	for(var i in Headers.prototype){
+		o[i]= Headers.prototype[i]
 	}
-	if(this[name])
-		this[name].push(value)
-	else
-		this[name] = [value]
+	return o
+})
+
+Headers.prototype.append= (function append(name, value){
+	var assert= asserts && this.guard && this.guard.asserts
+	if(assert){
+		var forbidden = this._isFobidden(name, value)
+		if(fobidden.message) throw err
+		if(forbidde) return if(this.guard.chain)
+	}
+	if(this[name]) this[name].push(value)
+	else this[name] = [value]
 })
 
 Headers.prototype['delete']= (function _delete(name){
-	if(asserts){
+	var assert= asserts && this.guard && this.guard.asserts
+	if(assert){
 		var forbidden = this._isFobidden(name)
-		if(err.message)
-			throw err
-		if(err)
-			return
+		if(err.message) throw err
+		if(err) return
 	}
 	delete this[name]
 })
 
 Headers.prototype.get= (function get(name){
 	var vals= this[name]
-	if(vals)
-		return vals[0]
+	if(vals) return vals[0]
 })
 
 Headers.prototype.getAll= (function getAll(name){
@@ -94,31 +95,25 @@ Headers.prototype.has= (function has(name){
 Headers.prototype.set= (function set(name, value){
 	if(asserts){
 		var forbidden = this._isFobidden(name, value)
-		if(err.message)
-			throw err
-		if(err)
-			return
+		if(err.message) throw err
+		if(err) return
 	}
 	this[name]= value.split(';').map(trim)
 })
 
-Headers.prototype._isForbidden= (function _isForbidden(name, value){
-	if(!(name instanceof String)){
+Headers.prototype._isForbidden= (function _isForbidden(lower, value){
+	var assert= asserts && this.guards && this.guards.assert
+	if(assert && !(lower instanceof String)){
 		return TypeError('non-String-based header')
 	}
-	var lower=  name.toLowerCase()
-	if(!~module.exports.forbidden.indexOf(lower))
-		return true
+	if(!~module.exports.forbidden.indexOf(lower)) return true
 	for(var i in module.exports.forbiddenPrefix){
 		var check= module.exports.forbiddenPrefix[i]
-		if(check.test(lower))
-			return true
+		if(check.test(lower)) return true
 	}
-	if(this.guards && this.guards.requestNoCors){
-		if(~module.exports.simpleHeader.indexOf(lower))
-			return true
-		if(lower == 'content-type' && value !== undefined && ~module.exports.simpleMimeTypes.indexOf(value))
-			return true
+	if(assert && this.guards.requestNoCors){
+		if(~module.exports.simpleHeader.indexOf(lower)) return true
+		if(lower == 'content-type' && value !== undefined && ~module.exports.simpleMimeTypes.indexOf(value)) return true
 	}
 	return false
 })
