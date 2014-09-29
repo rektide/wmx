@@ -15,14 +15,15 @@ function msg(name, messageType, fields, fieldTypes, flags){
 	}
 	var fn = new Function("a0","a1","a2","a3","a4","a5","a6","a7", lines.join(""))
 	fn.messageType= messageType
+	fn.messageName= name
 	fn.fields= fields
 	fn.fieldTypes= fieldTypes
-	fn.name= name
 	for(var j in FLAGS){
 		if(flags & FLAGS[j]){
 			fn[j]= true
 		}
 	}
+
 	module.exports[name]= fn
 }
 
