@@ -34,7 +34,7 @@ enum RequestCredentials { "omit", "same-origin", "include" };
 module.exports= Request
 
 function Request(){
-	Body.mixin(this)
+	Request.mixin(this)
 }
 
 Request.Fields= ['method', 'url', 'headers', 'referrer', 'mode', 'credentials']
@@ -59,8 +59,10 @@ Request.RequestCredentials= {
 
 Request.mixin= (function mixin(o){
 	Body.mixin(o)
-	for(var i in Reqest.prototype){
-		o[i]= Request.prototype[i]
+	if(!(o instanceof Request)){
+		for(var i in Reqest.prototype){
+			o[i]= Request.prototype[i]
+		}
 	}
 	return o
 })

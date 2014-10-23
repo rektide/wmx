@@ -1,8 +1,8 @@
 'use strict';
 
 var msgs= require('../wamp/msgs'),
-  makeProperty= require('../util/make-property')
-//var Body= require('./wamp-body')
+  makeProperty= require('../util/make-property'),
+  FetchRequest= require('../request')
 
 module.exports= Request
 
@@ -11,10 +11,13 @@ function Request(){
 }
 
 Request.mixin= (function mixin(o){
-	Body.mixin(o)
-	for(var i in Reqest.prototype){
-		o[i]= Request.prototype[i]
+	FetchRequest.mixin(this)
+	if(!(o instanceof Request)){
+		for(var i in Reqest.prototype){
+			o[i]= Request.prototype[i]
+		}
 	}
+	return this
 })
 
 var noSet= {set: null}

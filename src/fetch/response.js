@@ -27,9 +27,17 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque" };
 
 module.exports= Response
 
-function Response(done){
-	this._done= done
+function Response(){
 }
+
+Response.mixin= (function mixin(o){
+	if(!(o instanceof Response){
+		for(var i in Response.prototype){
+			o[i]= Response.prototype[i]
+		}
+	}
+	return this
+})
 
 Response.Fields= ['url', 'status', 'statusText', 'headers']
 
