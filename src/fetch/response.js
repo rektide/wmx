@@ -31,9 +31,10 @@ function Response(){
 }
 
 Response.mixin= (function mixin(o){
-	if(!(o instanceof Response){
+	if(!(o instanceof Response)){
 		for(var i in Response.prototype){
-			o[i]= Response.prototype[i]
+			if(!o[i])
+				o[i]= Response.prototype[i]
 		}
 	}
 	return this
@@ -51,7 +52,8 @@ Response.ResponseType=[
 Response.mixin= (function mixin(o){
 	Body.mixin(o)
 	for(var i in Response.prototype){
-		o[i]= Response.prototype[i]
+		if(!o[i])
+			o[i]= Response.prototype[i]
 	}
 	return o
 })

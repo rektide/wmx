@@ -2,7 +2,7 @@
 
 module.exports= function(field, base){
 	var ctx= base|| {}
-	var def= base.default ? "||"+base.default : ""
+	var def= ctx.default ? "||"+base.default : ""
 	if(ctx.get === undefined) ctx.get= Function("return "+field+def)
 	else if(ctx.get === null) delete ctx.get
 	if(ctx.set === undefined) ctx.set= Function("value", field+"= value")

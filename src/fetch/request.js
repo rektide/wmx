@@ -61,7 +61,8 @@ Request.mixin= (function mixin(o){
 	Body.mixin(o)
 	if(!(o instanceof Request)){
 		for(var i in Reqest.prototype){
-			o[i]= Request.prototype[i]
+			if(!o[i])
+				o[i]= Request.prototype[i]
 		}
 	}
 	return o

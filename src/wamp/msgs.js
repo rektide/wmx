@@ -24,6 +24,32 @@ function msg(name, messageType, fields, fieldTypes, flags){
 		}
 	}
 
+	fn.mixin= function(o){
+		if(!(o instanceof fn)){
+			for(var i in fieldTypes){
+				var fieldType= fieldTypes[i]
+				if(fieldType == "uri" || fieldType == "id" || fieldType == "string"){ //heh
+					//heh heh
+				}else if(fieldType == "dict"){
+					//Object.defineProperrty(o, fields[i], {
+					//	get: new Function("return this["+i+"]||(this["+i+"]= {})"),
+					//	set: new Function("val", "this["+i+"]=val")
+					//})
+					var name= fields[i],
+					  cur= o[name]
+					if(!cur)
+						o[name]= {}
+				}else if (fieldType == "number" || fieldType == "id"){
+					//Object.defineProperrty(o, fields[i], {
+					//	get: new Function("return this["+i+"]"),
+					//	set: new Function("val", "this["+i+"]= Number.parseInt(val)")
+					//})
+					//lol
+				}
+			}
+		}
+	}
+
 	module.exports[name]= fn
 }
 
