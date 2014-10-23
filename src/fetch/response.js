@@ -24,3 +24,38 @@ dictionary ResponseInit {
 
 enum ResponseType { "basic", "cors", "default", "error", "opaque" };
 */
+
+module.exports= Response
+
+function Response(done){
+	this._done= done
+}
+
+Response.Fields= ['url', 'status', 'statusText', 'headers']
+
+Response.ResponseType=[
+	'basic',
+	'cors',
+	'default',
+	'error',
+	'opaque']
+
+Response.mixin= (function mixin(o){
+	Body.mixin(o)
+	for(var i in Response.prototype){
+		o[i]= Response.prototype[i]
+	}
+	return o
+})
+
+Object.defineProperty(Response.prototype, 'type', {
+	get: function(){
+		return this.type
+	},
+	set: function(val){
+		if(!~Response.ResponseType.indexOf(val)){
+			throw new TypeError('type argument not of request type')
+		}
+		this.type= val
+	}
+})

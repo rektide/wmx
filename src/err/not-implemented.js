@@ -11,9 +11,12 @@ NotImplemented.prototype = new Error;
 
 NotImplemented.mixin= NotImplemented
 
+
 function makeNotImplemented(o, slot, message){
-	var name= 'NotImplemented:'+o.name||o'::'+slot : ''
+	var name= 'NotImplemented:'+(o.name||o)+'::'+slot + ': '
 	return function(){
 		throw new NotImplemented(message||'', name)
 	}
 }
+
+NotImplemented.makeNotImplemented= makeNotImplemented

@@ -5,8 +5,7 @@ var Body= require('./body')
 /*
 typedef (Request or ScalarValueString) RequestInfo;
 
-[Constructor(RequestInfo input, optional RequestInit init),
- Exposed=(Window,Worker)]
+[Constructor(RequestInfo input, optional RequestInit init), Exposed=(Window,Worker)]
 interface Request {
   readonly attribute ByteString method;
   readonly attribute ScalarValueString url;
@@ -36,6 +35,26 @@ module.exports= Request
 
 function Request(){
 	Body.mixin(this)
+}
+
+Request.Fields= ['method', 'url', 'headers', 'referrer', 'mode', 'credentials']
+
+Request.RequestModes= {
+	SameOrigin: "same-origin",
+	"same-origin": "same-origin",
+	NoCors: "no-cors",
+	"no-cors": "no-cors",
+	Cors: "cors",
+	cors: "cors"
+}
+
+Request.RequestCredentials= {
+	"Omit": "omit",
+	omit: "omit",
+	SameOrigin: "same-origin",
+	"same-origin": "same-origin",
+	Include: "include",
+	"include": "include"
 }
 
 Request.mixin= (function mixin(o){
