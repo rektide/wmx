@@ -22,7 +22,11 @@ Request.mixin= (function mixin(o){
 	return this
 })
 
-Object.defineProperty(Request.prototype, 'method', makeProperty('this.details.method'))
+Object.defineProperty(Request.prototype, 'method', makeProperty('this.details.method'), {
+	set: function(val){
+		this.method= new String(val).toUpperCase()
+	}
+})
 Object.defineProperty(Request.prototype, 'url', makeProperty('this.details.url'))
 Object.defineProperty(Request.prototype, 'headers', makeProperty('this.details.headers'))
 Object.defineProperty(Request.prototype, 'referrer', makeProperty('this.details.headers.get("referrer")', {

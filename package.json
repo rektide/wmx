@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test2": "browserify --debug test/browser/**/*.js | testling -x chrome",
-    "test": "browserify --debug test/browser/**/*.js | tape-run -b chrome",
+    "test": "browserify --debug test/browser/**/*.js test/fetch/**/*.js | tape-run -b chrome",
     "files": "find src test -iname '*js'"
   },
   "author": "",
