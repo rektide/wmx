@@ -24,6 +24,17 @@ function Body(){
 
 Body.mixin= (function mixin(o){
 	o.bodyUsed= o.bodyUsed || false
+	if(!(o instanceof Body)){
+		var names= Object.getOwnPropertyNames(Body.prototype)
+		for(var i in names){
+			var name = names[i]
+			if(o[name] === undefined){
+				var descriptor = Object.getOwnPropertyDescriptor(Body.prototype, name)
+				Object.defineProperty(o, name, descriptor)
+			}
+		}
+	}
+	return o
 })
 
 Body.prototype.arrayBuffer= NotImplemented.makeNotImplemented(Body, 'arrayBuffer')

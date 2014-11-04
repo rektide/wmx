@@ -60,9 +60,13 @@ Request.RequestCredentials= {
 Request.mixin= (function mixin(o){
 	Body.mixin(o)
 	if(!(o instanceof Request)){
-		for(var i in Reqest.prototype){
-			if(!o[i])
-				o[i]= Request.prototype[i]
+		var names= Object.getOwnPropertyNames(Request.prototype)
+		for(var i in names){
+			var name= names[i]
+			if(o[name] === undefined){
+				var descriptor = Object.getOwnPropertyDescriptor(Request.prototype, name)
+				Object.defineProperty(o, name, descriptor)
+			}
 		}
 	}
 	return o

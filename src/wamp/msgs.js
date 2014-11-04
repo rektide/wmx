@@ -26,6 +26,7 @@ function msg(name, messageType, fields, fieldTypes, flags){
 
 	fn.mixin= function(o){
 		if(!(o instanceof fn)){
+			o.messageType= messageType
 			for(var i in fieldTypes){
 				var fieldType= fieldTypes[i]
 				if(fieldType == "uri" || fieldType == "id" || fieldType == "string"){ //heh
@@ -37,8 +38,9 @@ function msg(name, messageType, fields, fieldTypes, flags){
 					//})
 					var name= fields[i],
 					  cur= o[name]
-					if(!cur)
+					if(cur === undefined){
 						o[name]= {}
+					}
 				}else if (fieldType == "number" || fieldType == "id"){
 					//Object.defineProperrty(o, fields[i], {
 					//	get: new Function("return this["+i+"]"),
@@ -48,8 +50,8 @@ function msg(name, messageType, fields, fieldTypes, flags){
 				}
 			}
 		}
+		return o
 	}
-
 	module.exports[name]= fn
 }
 

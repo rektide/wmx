@@ -1,4 +1,5 @@
-var tape= require('blue-tape'),
+var _= require('lodash'),
+  tape= require('blue-tape'),
   msgs= require('../../../src/wamp/msgs'),
   Request= require('../../../src/fetch/wamp/request')
 
@@ -10,12 +11,13 @@ tape('wamp request base use', function(t){
 			'x-magic': 42
 		}
 	}
-	var req= Request.mixin(inp)
+	var req= _.clone(inp)
+	Request.mixin(req)
 
-console.log("HI FROM WAMP-1")
 	t.equal(req.messageType, msgs.Call.messageType, 'messageType is Call')
-	t.equal(req.details.method, inp.method.toUpperCase(), 'method is POST')
+	t.equal(req.method, inp.method.toUpperCase(), 'method is POST')
+	t.equal(req.options.method, inp.method.toUpperCase(), 'options.method is POST')
 	t.equal(req.url, inp.url, 'url is url')
-	t.equal(req.details.url, inp.details, 'details.url is url')
+	t.equal(req.options.url, inp.url, 'options.url is url')
 	t.deepEqual(req.headers['x-magic'], 42, '42 is magical')
 })
