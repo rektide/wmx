@@ -20,4 +20,5 @@ tape('wamp request base use', function(t){
 	t.equal(req.url, inp.url, 'url is url')
 	t.equal(req.options.url, inp.url, 'options.url is url')
 	t.deepEqual(req.headers['x-magic'], 42, '42 is magical')
+	t.end()
 })

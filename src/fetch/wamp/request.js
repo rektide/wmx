@@ -41,7 +41,7 @@ Request.mixin= (function mixin(o){
 
 Object.defineProperty(Request.prototype, 'method', makeProperty('this.options.method', {
 	set: function(val){
-		console.log('set method:'+this.options.method)
+		//console.log('set method:'+this.options.method)
 		this.options.method= new String(val).toUpperCase()
 	}
 }))
