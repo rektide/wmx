@@ -1,8 +1,8 @@
 var test= require("blue-tape"),
   when= require("when"),
-  msgs= require("../../../src/wamp/msgs"),
-  cross= require("../../../src/transport/cross-document"),
-  arrayWriter= require("../../../src/wamp/array-writer")
+  msgs= require("wmx/wamp/msgs"),
+  cross= require("wmx/transport/cross-document"),
+  arrayWriter= require("wmx/wamp/array-writer")
 
 var realm= "realm:basic",
   details= {special:"bits"}

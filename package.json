@@ -1,8 +1,8 @@
 {
-	"name": "wm",
+	"name": "wmx",
 	"version": "0.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "wmx.js",
 	"scripts": {
 		"test2": "browserify --debug test/browser/**/*.js | testling -x chrome",
 		"test": "browserify --debug test/browser/**/*.js test/fetch/**/*.js | tape-run -b chrome",

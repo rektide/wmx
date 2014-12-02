@@ -1,7 +1,7 @@
 var _= require('lodash'),
   tape= require('blue-tape'),
-  msgs= require('../../../src/wamp/msgs'),
-  Request= require('../../../src/fetch/wamp/request')
+  msgs= require('wmx/wamp/msgs'),
+  Request= require('wmx/fetch/wamp/request')
 
 tape('wamp request base use', function(t){
 	var inp= {
