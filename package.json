@@ -1,24 +1,24 @@
 {
-  "name": "wm",
-  "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test2": "browserify --debug test/browser/**/*.js | testling -x chrome",
-    "test": "browserify --debug test/browser/**/*.js test/fetch/**/*.js | tape-run -b chrome",
-    "files": "find src test -iname '*js'"
-  },
-  "author": "",
-  "license": "",
-  "dependencies": {
-    "lodash": "^2.4.1",
-    "when": "^3.2.2"
-  },
-  "devDependencies": {
-    "blue-tape": "^0.1.7",
-    "browserify": "^5.9.1",
-    "grunt": "^0.4.5",
-    "tape-run": "^0.2.0",
-    "testling": "^1.7.0"
-  }
+	"name": "wm",
+	"version": "0.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test2": "browserify --debug test/browser/**/*.js | testling -x chrome",
+		"test": "browserify --debug test/browser/**/*.js test/fetch/**/*.js | tape-run -b chrome",
+		"files": "find src test -iname '*js'"
+	},
+	"author": "",
+	"license": "",
+	"dependencies": {
+		"lodash": "^2.4.1",
+		"when": "^3.2.2"
+	},
+	"devDependencies": {
+		"blue-tape": "^0.1.7",
+		"browserify": "^5.9.1",
+		"grunt": "^0.4.5",
+		"tape-run": "^0.2.0",
+		"testling": "^1.7.0"
+	}
 }
