@@ -1,6 +1,6 @@
 var util= require('util')
-var arrayReader= require('../wamp/array-reader'),
-  arrayWriter= require('../wamp/array-writer'),
+var arrayReader= require('../array-reader'),
+  arrayWriter= require('../array-writer'),
   Pipe= require('./pipe')
 
 module.exports = CrossDocumentPipe

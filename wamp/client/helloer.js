@@ -1,9 +1,9 @@
 var events= require('events'),
   util= require('util')
 var when= require('when')
-var abortSnoop= require('../util/abort-snoop'),
-  makePipeline= require('../util/make-pipeline'),
-  msgs= require('../wamp/msgs')
+var abortSnoop= require('../../util/abort-snoop'),
+  makePipeline= require('../../util/make-pipeline'),
+  msgs= require('../msgs')
 
 module.exports= ClientHelloer
 

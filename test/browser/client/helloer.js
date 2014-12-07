@@ -4,8 +4,8 @@ var test= require('blue-tape'),
   when= require('when')
 var arrayReader= require('wmx/wamp/array-reader'),
   msgs= require('wmx/wamp/msgs'),
-  cross= require('wmx/transport/cross-document'),
-  helloer= require('wmx/client/helloer')
+  cross= require('wmx/wamp/transport/cross-document'),
+  helloer= require('wmx/wamp/client/helloer')
 
 
 var realm= 'helloer_test_realm',

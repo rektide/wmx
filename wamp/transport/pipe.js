@@ -1,6 +1,6 @@
 var events= require('events'),
   util= require('util')
-var makePipeline= require('../util/make-pipeline')
+var makePipeline= require('../../util/make-pipeline')
 
 module.exports = Pipe
 

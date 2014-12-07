@@ -1,10 +1,10 @@
 var _= require('lodash'),
   events= require('events'),
   util= require('util')
-var abortSnoop= require('../util/abort-snoop'),
-  makePipeline= require('../util/make-pipeline'),
-  wamp= require('../wamp/msgs'),
-  roles= require('../wamp/roles')
+var abortSnoop= require('../../util/abort-snoop'),
+  makePipeline= require('../../util/make-pipeline'),
+  wamp= require('../msgs'),
+  roles= require('../roles')
 
 var MAX_SAFE_INT= Math.pow(2, 53)
 
