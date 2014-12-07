@@ -1,13 +1,13 @@
-var test= require("blue-tape"),
+var tape= require("blue-tape"),
   when= require("when"),
   msgs= require("wmx/wamp/msgs"),
-  cross= require("wmx/transport/cross-document"),
+  cross= require("wmx/wamp/transport/cross-document"),
   arrayWriter= require("wmx/wamp/array-writer")
 
 var realm= "realm:basic",
   details= {special:"bits"}
 
-test("CrossDocumentPipe sending", function(t){
+tape("CrossDocumentPipe sending", function(t){
 	var channel = new MessageChannel(),
 	  pipe= new cross(channel.port1),
 	  done= when.defer()
@@ -24,7 +24,7 @@ test("CrossDocumentPipe sending", function(t){
 })
 
 
-test("CrossDomainPipe receiving", function(t){
+tape("CrossDomainPipe receiving", function(t){
 	var channel= new MessageChannel(),
 	  pipe= new cross(channel.port1),
 	  port2= channel.port2,

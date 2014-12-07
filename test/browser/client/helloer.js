@@ -1,6 +1,6 @@
 "use strict";
 
-var test= require('blue-tape'),
+var tape= require('blue-tape'),
   when= require('when')
 var arrayReader= require('wmx/wamp/array-reader'),
   msgs= require('wmx/wamp/msgs'),
@@ -20,7 +20,7 @@ var realm= 'helloer_test_realm',
       broker: {}
   }}
 
-test('Helloer', function(t){
+tape('Helloer', function(t){
 	var channel= new MessageChannel(),
 	  pipe= new cross(channel.port1),
 	  helloer_= new helloer(),
