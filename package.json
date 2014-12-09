@@ -9,16 +9,15 @@
 		"files": "find *js wamp http-server fetch util test -iname '*js' 2>/dev/null"
 	},
 	"author": "",
-	"license": "",
+	"license": "X",
 	"dependencies": {
 		"lodash": "^2.4.1",
-		"when": "^3.2.2"
+		"when": "^3.6.3"
 	},
 	"devDependencies": {
-		"blue-tape": "^0.1.7",
-		"browserify": "^5.9.1",
-		"grunt": "^0.4.5",
-		"tape-run": "^0.2.0",
-		"testling": "^1.7.0"
+		"blue-tape": "^0.1.8",
+		"browserify": "^7.0.0",
+		"tape-run": "^0.3.0",
+		"testling": "^1.7.1"
 	}
 }
