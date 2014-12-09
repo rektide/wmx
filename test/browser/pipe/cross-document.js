@@ -15,9 +15,11 @@ module.exports.realm= "realm:basic"
 module.exports.details= {special:"bits"}
 
 function CrossDocumentHarness(harness){
+	// constitute a channel, pipe
 	harness= harness|| {}
 	harness.channel= harness.channel|| new MessageChannel()
 	harness.pipe= harness.pipe|| new cross(harness.channel.port1)
+	// sample "hello" message into the pipe
 	harness.postHello= postHello
 	function postHello(){
 		var realm= harness.realm|| module.exports.realm
@@ -31,12 +33,12 @@ function CrossDocumentHarness(harness){
 		var message= [msgs.Hello.messageType, realm, details]
 		harness.channel.port2.postMessage(message)
 	}
+	// by default, start the receive channel "soon"
 	if(!harness.noStart)
 		process.nextTick(function(){
 			if(!harness.noStart)
 				harness.channel.port1.start()
 		})
-	harness.channel.port1.start()
 	return harness
 }
 

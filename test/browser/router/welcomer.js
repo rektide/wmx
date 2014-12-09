@@ -24,12 +24,16 @@ function WelcomerHarness(harness){
 		return harness.details && harness.details !== details ? harness.details : module.exports.callee
 	}
 
+	// prepare a CrossDocument pipe
 	harness= harness|| {}
 	if(!harness.details){
 		harness.details= details
 	}
+	harness.realm= harness.realm|| module.exports.realm
 	harness= crossHarness(harness)
-	var realm= harness.realm|| module.exports.realm
+
+	// instantiate welcomer
+	var realm= harness.realm
 	if(typeof(realm) === "function"){
 		realm= realm.call(harness)
 	}
@@ -48,14 +52,14 @@ tape("Welcomer replies to a raw message", function(t){
 		t.ok(welcome.session, "reply has session")
 		t.ok(welcome.details.roles, "reply has roles")
 		t.ok(welcome.details.roles.dealer, "reply is dealer")
-		t.noOk(welcome.hello, "welcome has no hello")
+		t.notOk(welcome.hello, "welcome has no hello")
 		sent.resolve()
 	}
-	
-	harness.welcomer.on(msgs.Hello.messageType, function(welcome){
+
+	harness.welcomer.on(msgs.Welcome.messageType, function(welcome){
 		//t.ok(welcome instanceof msgs.Welcome, "welcome is a welcome")
 		t.ok(welcome.messageType, msgs.Welcome.messageType, "welcome emits of welcome messageType")
-		t.equal(welcome.session,"welcome emits session")
+		t.ok(welcome.session,"welcome emits session")
 		t.ok(welcome.details, "welcome emits details")
 		t.ok(welcome.details.roles, "welcome emits roles")
 		t.ok(welcome.details.roles.dealer, "welcomer emits a dealer")
