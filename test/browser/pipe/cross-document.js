@@ -7,11 +7,16 @@ var tape= require("blue-tape"),
 var realm= "realm:basic",
   details= {special:"bits"}
 
+function CrossDocument(){
+	var channel= new MessageChannel(),
+	  pipe= new cross(channel.port1)
+	return {pipe: pipe, port1: channel.port1, port2: channel.port2}
+}
+
 tape("CrossDocumentPipe sending", function(t){
-	var channel = new MessageChannel(),
-	  pipe= new cross(channel.port1),
+	var cross= CrossDocument(),
 	  done= when.defer()
-	channel.port2.onmessage= function(msg){
+	cross.port2.onmessage= function(msg){
 		t.equal(msg.data[0], msgs.Hello.messageType, "Hello transmitted")
 		t.equal(msg.data[1], realm, "realm transmitted")
 		t.deepEqual(msg.data[2], details, "details transmitted")
@@ -19,23 +24,21 @@ tape("CrossDocumentPipe sending", function(t){
 	}
 
 	var hello= new msgs.Hello(realm, details)
-	pipe.send(hello)
+	cross.pipe.send(hello)
 	return done.promise
 })
 
 
 tape("CrossDomainPipe receiving", function(t){
-	var channel= new MessageChannel(),
-	  pipe= new cross(channel.port1),
-	  port2= channel.port2,
+	var cross= CrossDocument(),
 	  done= when.defer()
-	pipe.on(msgs.Hello.messageType, function(msg){
+	cross.pipe.on(msgs.Hello.messageType, function(msg){
 		t.ok(msg instanceof msgs.Hello, "a Hello received")
 		t.equal(msg.realm, realm, "realm received")
 		t.deepEqual(msg.details, details, "details received")
 		done.resolve()
 	})
-	port2.postMessage([msgs.Hello.messageType, realm, details])
-	channel.port1.start()
+	cross.port2.postMessage([msgs.Hello.messageType, realm, details])
+	cross.port1.start()
 	return done.promise
 })
