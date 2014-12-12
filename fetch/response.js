@@ -1,3 +1,7 @@
+'use strict';
+
+var Body = require('./body')
+
 /*
 [Constructor(optional BodyInit body, optional ResponseInit init),
  Exposed=(Window,Worker)]
