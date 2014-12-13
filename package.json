@@ -4,6 +4,7 @@
 	"description": "",
 	"main": "wmx.js",
 	"scripts": {
+		"test3": "webpack -d test/**/*.js out.js ; sleep 1; cat out.js | tape-run -b chrome -w",
 		"test2": "browserify --debug test/browser/**/*.js | testling -x chrome",
 		"test": "browserify --debug test/browser/**/*.js test/fetch/**/*.js | tape-run -b chrome",
 		"files": "find *js wamp http-server fetch util test -iname '*js' 2>/dev/null"

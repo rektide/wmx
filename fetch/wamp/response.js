@@ -39,9 +39,9 @@ Response.mixin= (function mixin(o){
 	return o
 })
 
-Object.defineProperty(Response.prototype, 'url', makeProperty('this.options.url'))
-Object.defineProperty(Response.prototype, 'status', makeProperty('this.options.status'))
-Object.defineProperty(Response.prototype, 'headers', makeProperty('this.options.headers'))
+Object.defineProperty(Response.prototype, 'url', makeProperty('this.details.url'))
+Object.defineProperty(Response.prototype, 'status', makeProperty('this.details.status'))
+Object.defineProperty(Response.prototype, 'headers', makeProperty('this.details.headers'))
 
 Response.prototype.clone= (function clone(){
 	var newReq= new Response()
