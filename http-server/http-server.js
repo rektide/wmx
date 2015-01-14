@@ -1,4 +1,5 @@
-var emitterMixin= require("emitter-mixin")
+var emitterMixin= require("emitter-mixin"),
+  msgs= require("wmx/msgs")
 
 function HttpServer(handler){
 	if(!this.listen){ // this test could be better oh-kay?
@@ -13,9 +14,12 @@ function HttpServer(handler){
 }
 
 HttpServer.prototype.listen= function(pipe){
-	// ensure pipe is encoding yada-yada something-or-other
-	pipe.on(msgs.Call.messageType, function(){
-		console.log("we got a request")
+	pipe.on(msgs.Call.messageType, function(msg){
+		var opts= msg.options
+		if(opts.method && opts.url) {
+			Request.mixin(msg)
+			this.emit("request", msg)
+		}
 	})
 }
 
