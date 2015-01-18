@@ -1,7 +1,8 @@
 var tape= require("blue-tape")
 var http= require('wmx/http-server'),
   Welcomer= require('../router/welcomer'),
-  CrossDoc= require("wmx/test/browser/pipe/cross-document")
+  CrossDoc= require("wmx/test/browser/pipe/cross-document"),
+  Request= require("wmx/fetch/response")
 
 tape('Server', function(t){
 	//t.end()
@@ -33,5 +34,5 @@ tape('Server', function(t){
 	var request= Request({
 		url: '//ping'
 	})
-	welcomerPair.port2.postMessage(request)
+	welcomerPair.channel.port2.postMessage(request)
 })

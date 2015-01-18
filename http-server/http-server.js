@@ -1,5 +1,6 @@
 var emitterMixin= require("emitter-mixin"),
-  msgs= require("wmx/msgs")
+  msgs= require("wmx/wamp/msgs"),
+  Request= require("wmx/fetch/request")
 
 function HttpServer(handler){
 	if(!this.listen){ // this test could be better oh-kay?
