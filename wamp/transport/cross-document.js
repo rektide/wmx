@@ -6,7 +6,7 @@ var arrayReader= require('../array-reader'),
 module.exports = CrossDocumentPipe
 
 function messageReader(e){
-	if(e && e.currentTarget && e.data.length){
+	if(e && e.currentTarget && e.data && e.data.length){
 		var msg = arrayReader(e.data)
 		msg.pipe = e.currentTarget
 		return msg
