@@ -99,6 +99,26 @@ function apply(src, dest){
 	return dest
 }
 
+function makeApplier(src){
+	var descriptors = {}
+	var srcChain= srcChain|| getPropertyChain(src)
+	for(var i= srcChain.length-1; i >= 0; --i){
+		var src= srcChain[i]
+		for(var key of Object.getOwnPropertyNames(src)){
+			var propDesc= Object.getOwnPropertyDescriptor(src, key)
+			descriptors[key]= propDesc
+		}
+	}
+	return (function apply(dest){
+		var destChain= getPrototypeChain(target)
+		for(var key in descriptors){
+			if(!getPropertyDescriptor(dest, key, destChain)){
+				Object.defineProperty(dest, key, descriptors[key])
+			}
+		}
+	})
+}
+
 module.exports= function(base, super){
 	base.prototype= Object.create(super, describe(base.prototype))
 	base.prototype.constructor= base
