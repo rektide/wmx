@@ -99,7 +99,7 @@ function apply(src, dest){
 	return dest
 }
 
-function makeApplier(src){
+function applier(src){
 	var descriptors = {}
 	var srcChain= srcChain|| getPropertyChain(src)
 	for(var i= srcChain.length-1; i >= 0; --i){
@@ -109,8 +109,8 @@ function makeApplier(src){
 			descriptors[key]= propDesc
 		}
 	}
-	return (function apply(dest){
-		var destChain= getPrototypeChain(target)
+	return (function apply(dest, destChain){
+		destChain= destChain|| getPrototypeChain(target)
 		for(var key in descriptors){
 			if(!getPropertyDescriptor(dest, key, destChain)){
 				Object.defineProperty(dest, key, descriptors[key])
@@ -119,17 +119,18 @@ function makeApplier(src){
 	})
 }
 
-module.exports= function(base, super){
-	base.prototype= Object.create(super, describe(base.prototype))
-	base.prototype.constructor= base
+function mixiner(base){
+	var apply= applier(base)
 	return function(o){
 		if(o instanceof base){
 			return o
 		}
-		var klass= base
-		while(klass != 
-		super.call(o)
-		base.call(o)
+		apply(o)
 		return o
 	}
 }
+
+module.exports= mixiner
+module.exports.apply= apply
+module.exports.applier= applier
+
