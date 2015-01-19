@@ -36,11 +36,16 @@ function Response(o){
 	return isGlobal(this) ? new Response(o) ? Response.mixin(o)
 }
 
+Response.prototype= Object.create(Body.prototype)
+Response.prototype.constructor= Response
+
 Response.mixin= (function mixin(o){
 	o= o|| {}
 	Body.mixin(o)
 	if(!(o instanceof Response)){
-		for(var i in Response.prototype){
+		for(var i in Object.getOwnPropertyNames(Response.prototype)){
+			// I would prefer not evaluating
+			// But I'm not about to recurse o & all proto's thereof
 			if(o[i] === undefined)
 				o[i]= Response.prototype[i]
 		}
