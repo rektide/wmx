@@ -1,6 +1,7 @@
 'use strict';
 
-var Body = require('./body')
+var Body = require('./body'),
+  isGlobal= require('../util/is-global')
 
 /*
 [Constructor(optional BodyInit body, optional ResponseInit init),
@@ -31,18 +32,22 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque" };
 
 module.exports= Response
 
-function Response(){
+function Response(o){
+	return isGlobal(this) ? new Response(o) ? Response.mixin(o)
 }
 
 Response.mixin= (function mixin(o){
+	o= o|| {}
+	Body.mixin(o)
 	if(!(o instanceof Response)){
 		for(var i in Response.prototype){
-			if(!o[i])
+			if(o[i] === undefined)
 				o[i]= Response.prototype[i]
 		}
 	}
-	return this
+	return o
 })
+
 
 Response.Fields= ['url', 'status', 'statusText', 'headers']
 
@@ -52,15 +57,6 @@ Response.ResponseType=[
 	'default',
 	'error',
 	'opaque']
-
-Response.mixin= (function mixin(o){
-	Body.mixin(o)
-	for(var i in Response.prototype){
-		if(!o[i])
-			o[i]= Response.prototype[i]
-	}
-	return o
-})
 
 Object.defineProperty(Response.prototype, 'type', {
 	get: function(){
