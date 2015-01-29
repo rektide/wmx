@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"blue-tape": "^0.1.8",
-		"browserify": "^7.0.0",
+		"browserify": "^8.1.1",
 		"tape-run": "^0.3.0",
 		"testling": "^1.7.1"
 	}

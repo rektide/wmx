@@ -33,7 +33,7 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque" };
 module.exports= Response
 
 function Response(o){
-	return isGlobal(this) ? new Response(o) ? Response.mixin(o)
+	return isGlobal(this) ? new Response(o) : Response.mixin(o);
 }
 
 Response.prototype= Object.create(Body.prototype)
@@ -43,11 +43,14 @@ Response.mixin= (function mixin(o){
 	o= o|| {}
 	Body.mixin(o)
 	if(!(o instanceof Response)){
-		for(var i in Object.getOwnPropertyNames(Response.prototype)){
+		var names = Object.getOwnPropertyNames(Response.prototype)
+		for(var i = 0; i < names.length; ++i){
+			var name= names[i]
 			// I would prefer not evaluating
 			// But I'm not about to recurse o & all proto's thereof
-			if(o[i] === undefined)
-				o[i]= Response.prototype[i]
+			if(o[name] === undefined && name !== 'constructor') {
+				o[name]= Response.prototype[name]
+			}
 		}
 	}
 	return o

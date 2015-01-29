@@ -2,6 +2,6 @@ var global= (function(){
 	return this
 })()
 
-module.exports= function(ctx){
+module.exports= function(contextless){
 	return global === contextless
 }
