@@ -33,8 +33,6 @@ enum ResponseType { "basic", "cors", "default", "error", "opaque" };
 
 module.exports= Response
 
-var mixiner= mixin(Response.prototype)
-
 function Response(o){
 	return isGlobal(this) ? mixiner(o) : mixiner(this, o)
 }
@@ -42,7 +40,6 @@ function Response(o){
 Response.prototype= Object.create(Body.prototype)
 Response.prototype.constructor= Response
 
-Response.mixin= mixiner;
 /*
 (function mixin(o){
 	mixiner(
@@ -75,12 +72,15 @@ Response.ResponseType=[
 
 Object.defineProperty(Response.prototype, 'type', {
 	get: function(){
-		return this.type
+		return this._type
 	},
 	set: function(val){
-		if(!~Response.ResponseType.indexOf(val)){
+		if(Response.ResponseType.indexOf(val) === -1){
 			throw new TypeError('type argument not of request type')
 		}
-		this.type= val
+		this._type= val
 	}
 })
+
+var mixiner= mixin(Response.prototype)
+Response.mixin= mixiner;

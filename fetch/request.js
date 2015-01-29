@@ -1,6 +1,8 @@
 'use strict';
 
-var Body= require('./body')
+var Body= require('./body'),
+  mixin= require('../util/mixin'),
+  isGlobal= require('../util/is-global')
 
 /*
 typedef (Request or ScalarValueString) RequestInfo;
@@ -34,7 +36,7 @@ enum RequestCredentials { "omit", "same-origin", "include" };
 module.exports= Request
 
 function Request(){
-	Request.mixin(this)
+	return isGlobal(this) ? mixiner(o) : mixiner(this, o)
 }
 
 Request.Fields= ['method', 'url', 'headers', 'referrer', 'mode', 'credentials']
@@ -57,17 +59,5 @@ Request.RequestCredentials= {
 	"include": "include"
 }
 
-Request.mixin= (function mixin(o){
-	Body.mixin(o)
-	if(!(o instanceof Request)){
-		var names= Object.getOwnPropertyNames(Request.prototype)
-		for(var i in names){
-			var name= names[i]
-			if(o[name] === undefined){
-				var descriptor = Object.getOwnPropertyDescriptor(Request.prototype, name)
-				Object.defineProperty(o, name, descriptor)
-			}
-		}
-	}
-	return o
-})
+var mixiner= mixin(Request.prototype)
+Request.mixin= mixiner;

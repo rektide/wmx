@@ -38,7 +38,7 @@ Body.mixin= (function mixin(o){
 })
 
 Body.prototype.arrayBuffer= NotImplemented.makeNotImplemented(Body, 'arrayBuffer')
-Body.prototype.arrayBuffer= NotImplemented.makeNotImplemented(Body, 'blob')
-Body.prototype.arrayBuffer= NotImplemented.makeNotImplemented(Body, 'formData')
-Body.prototype.arrayBuffer= NotImplemented.makeNotImplemented(Body, 'json')
-Body.prototype.arrayBuffer= NotImplemented.makeNotImplemented(Body, 'text')
+Body.prototype.blob= NotImplemented.makeNotImplemented(Body, 'blob')
+Body.prototype.formData= NotImplemented.makeNotImplemented(Body, 'formData')
+Body.prototype.json= NotImplemented.makeNotImplemented(Body, 'json')
+Body.prototype.text= NotImplemented.makeNotImplemented(Body, 'text')

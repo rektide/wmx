@@ -66,34 +66,38 @@ function getPrototypeChain(o){
 			break
 		rv.push(cursor)
 		cursor = Object.getPrototypeOf(cursor)
-		if(cursor.constructor === Function || cursor.constructor === Object)
+		if(cursor.constructor === Function || cursor.constructor === Object){
 			break
+		}
+
 	}
 	return rv
 }
+
+
+function nop(){}
 
 function walkChain(protoChain, fn){
 	for(var i= protoChain.length-1; i >= 0; --i){
 		var src= protoChain[i],
 		  names= Object.getOwnPropertyNames(src)
-		for(var i of names){
-			var name= names[i]
-			console.log('op3a:'+key)
+		for(var j= 0; j< names.length; ++j){
+			var name= names[j]
+			if(nop[name] !== undefined)
+				continue;
 			var propDesc= Object.getOwnPropertyDescriptor(src, name)
 			fn(propDesc, name, src)
-			console.log('op3b')
 		}
 	}
 }
+
 
 function getPropertyDescriptor(o, prop){
 	if(!(o instanceof Array))
 		o= getPrototypeChain(o)
 	for(var i= 0; i< o.length; ++i){
 		var prototype= o[i]
-		console.log('op1a')
 		var propDesc= Object.getOwnPropertyDescriptor(prototype, prop)
-		console.log('op1b:'+!!propDesc)
 		if (propDesc)
 			return propDesc
 	}
@@ -104,9 +108,8 @@ function apply(src, dest, destChain){
 		src= getPrototypeChain(src)
 	}
 	destChain= destChain|| getPrototypeChain(dest)
-	walkChain(src, function(propDesc, key) {
-		if(!getPropertyDescriptor(destChain, key)){
-			console.log('defineprop:'+key)
+	walkChain(src, function(propDesc, key, src) {
+		if(key !== 'constructor' && !getPropertyDescriptor(destChain, key)){
 			Object.defineProperty(dest, key, propDesc)
 		}
 	})
@@ -117,33 +120,32 @@ function applier(src){
 	if(!(src instanceof Array)){
 		src= getPrototypeChain(src)
 	}
-	return (function apply(dest, destChain){
-		apply(src, dest, destChain)
+	return (function(dest, destChain){
+		return apply(src, dest, destChain)
 	})
 }
 
-function isInstance(o, chain){
-	for(var i= 0; i< chain.length; ++i){
-		var c= chain[i]
-		if(o.constructor == c)
+function isInstance(o, klass){
+	if(!(o instanceof Array)){
+		o= getPrototypeChain(o)
+	}
+	for(var i= 0; i< o.length; ++i){
+		var c= o[i]
+		if(c.constructor == klass)
 			return true
 	}
 	return false
 }
 
 function mixiner(base){
-	console.log('hey')
 	var baseChain= getPrototypeChain(base),
 	  apply= applier(baseChain)
-	console.log('ho')
 	return function(o, extra){
 		if(!o)
 			o= {}
-		console.log('apply')
 		if(!isInstance(o, baseChain)){
 			apply(o)
 		}
-		console.log('we go')
 		for(var i in extra){
 			o[i]= extra[i]
 		}
