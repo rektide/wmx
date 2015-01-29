@@ -60,72 +60,93 @@ function describe(o){
 function getPrototypeChain(o){
 	// get all prototypes in the chain
 	var cursor= o,
-	  rv= [o]
+	  rv= []
 	while(true){
-		cursor= Object.getPrototypeOf(cursor)
-		if(cursor) {
-			rv.push(cursor)
-		} else {
+		if(!(cursor instanceof Object))
 			break
-		}
+		rv.push(cursor)
+		cursor = Object.getPrototypeOf(cursor)
+		if(cursor.constructor === Function || cursor.constructor === Object)
+			break
 	}
 	return rv
 }
 
-function getPropertyDescriptor(o, prop, protoChain){
-	if(!protoChain)
-		chain= getPrototypeChain(o)
-	for(var i= 0; i< protoChain.length; ++i){
-		var prototype= protoChain[i]
+function walkChain(protoChain, fn){
+	for(var i= protoChain.length-1; i >= 0; --i){
+		var src= protoChain[i],
+		  names= Object.getOwnPropertyNames(src)
+		for(var i of names){
+			var name= names[i]
+			console.log('op3a:'+key)
+			var propDesc= Object.getOwnPropertyDescriptor(src, name)
+			fn(propDesc, name, src)
+			console.log('op3b')
+		}
+	}
+}
+
+function getPropertyDescriptor(o, prop){
+	if(!(o instanceof Array))
+		o= getPrototypeChain(o)
+	for(var i= 0; i< o.length; ++i){
+		var prototype= o[i]
+		console.log('op1a')
 		var propDesc= Object.getOwnPropertyDescriptor(prototype, prop)
+		console.log('op1b:'+!!propDesc)
 		if (propDesc)
 			return propDesc
 	}
 }
 
-function apply(src, dest){
-	var srcChain= srcChain|| getPropertyChain(src)
-	var destChain= getPrototypeChain(target)
-
-	for(var i= srcChain.length-1; i >= 0; --i){
-		var src= srcChain[i]
-		for(var key of Object.getOwnPropertyNames(src)){
-			if(!getPropertyDescriptor(dest, key, destChain)){
-				var propDesc= Object.getOwnPropertyDescriptor(src, key)
-				Object.defineProperty(dest, key, propDesc)
-			}
-		}
+function apply(src, dest, destChain){
+	if(!(src instanceof Array)){
+		src= getPrototypeChain(src)
 	}
+	destChain= destChain|| getPrototypeChain(dest)
+	walkChain(src, function(propDesc, key) {
+		if(!getPropertyDescriptor(destChain, key)){
+			console.log('defineprop:'+key)
+			Object.defineProperty(dest, key, propDesc)
+		}
+	})
 	return dest
 }
 
 function applier(src){
-	var descriptors = {}
-	var srcChain= srcChain|| getPropertyChain(src)
-	for(var i= srcChain.length-1; i >= 0; --i){
-		var src= srcChain[i]
-		for(var key of Object.getOwnPropertyNames(src)){
-			var propDesc= Object.getOwnPropertyDescriptor(src, key)
-			descriptors[key]= propDesc
-		}
+	if(!(src instanceof Array)){
+		src= getPrototypeChain(src)
 	}
 	return (function apply(dest, destChain){
-		destChain= destChain|| getPrototypeChain(target)
-		for(var key in descriptors){
-			if(!getPropertyDescriptor(dest, key, destChain)){
-				Object.defineProperty(dest, key, descriptors[key])
-			}
-		}
+		apply(src, dest, destChain)
 	})
 }
 
+function isInstance(o, chain){
+	for(var i= 0; i< chain.length; ++i){
+		var c= chain[i]
+		if(o.constructor == c)
+			return true
+	}
+	return false
+}
+
 function mixiner(base){
-	var apply= applier(base)
-	return function(o){
-		if(o instanceof base){
-			return o
+	console.log('hey')
+	var baseChain= getPrototypeChain(base),
+	  apply= applier(baseChain)
+	console.log('ho')
+	return function(o, extra){
+		if(!o)
+			o= {}
+		console.log('apply')
+		if(!isInstance(o, baseChain)){
+			apply(o)
 		}
-		apply(o)
+		console.log('we go')
+		for(var i in extra){
+			o[i]= extra[i]
+		}
 		return o
 	}
 }
