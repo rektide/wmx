@@ -18,7 +18,7 @@ tape('wamp response base use', function(t){
 	t.equal(res.messageType, msgs.Result.messageType, 'messageType is Result')
 	t.equal(res.status, outp.status, 'status is 200')
 	t.equal(res.url, outp.url, 'url is url')
-	t.equal(res.details.url, outp.url, 'options.url is url')
+	t.equal(res.details.url, outp.url, 'details.url is url')
 	t.deepEqual(res.headers['x-magic'], 47, '47 is magical')
 	t.end()
 })

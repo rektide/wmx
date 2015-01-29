@@ -9,7 +9,16 @@ var msgs= require('../../wamp/msgs'),
 module.exports= Request
 
 function Request(o){
-	return isGlobal(this) ? mixiner(o) : mixiner(this, o)
+	if(this instanceof Request){
+		msgs.Call.mixin(this)
+		mixiner(this, o)
+		return this
+	}else{
+		o= o|| {}
+		msgs.Call.mixin(o)
+		mixiner(o)
+		return o
+	}
 }
 
 Request.prototype= Object.create(FetchRequest.prototype)
@@ -36,4 +45,4 @@ Request.prototype.clone= (function clone(){
 })
 
 var mixiner= mixin(Request.prototype)
-Request.mixin= mixiner
+Request.mixin= Request

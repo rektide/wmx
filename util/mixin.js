@@ -1,3 +1,5 @@
+var isGlobal= require('./is-global')
+
 /**
   Common means to add entries in to and remove entries from a pipeline
 */
@@ -108,11 +110,23 @@ function apply(src, dest, destChain){
 		src= getPrototypeChain(src)
 	}
 	destChain= destChain|| getPrototypeChain(dest)
+	var diverted
 	walkChain(src, function(propDesc, key, src) {
-		if(key !== 'constructor' && !getPropertyDescriptor(destChain, key)){
-			Object.defineProperty(dest, key, propDesc)
+		if(key === 'constructor'){
+			return
 		}
+		if(getPropertyDescriptor(destChain, key)){
+			if(!diverted)
+				diverted= {}
+			diverted[key]= dest[key]
+			// perhaps only do this if this is a value, not a complex prop?
+			// and check to see whether incoming prop has a setter or no?
+		}
+		Object.defineProperty(dest, key, propDesc)
 	})
+	for(var key in diverted){
+		dest[key]= diverted[key]
+	}
 	return dest
 }
 
@@ -138,14 +152,25 @@ function isInstance(o, klass){
 }
 
 function mixiner(base){
-	var baseChain= getPrototypeChain(base),
-	  apply= applier(baseChain)
+	var baseChain;
+	if(base instanceof Array){
+		baseChain= base.map(getPrototypeChain)
+		baseChain= Array.prototype.concat.apply([], baseChain)
+	}else{
+		baseChain= getPrototypeChain(base)
+	}
+	var apply= applier(baseChain)
 	return function(o, extra){
+		if(this && !isGlobal(this)){
+			extra= o
+			o= this
+		}
 		if(!o)
 			o= {}
 		if(!isInstance(o, baseChain)){
 			apply(o)
 		}
+		console.log('bonus')
 		for(var i in extra){
 			o[i]= extra[i]
 		}

@@ -1,17 +1,25 @@
 'use strict';
 
 var msgs= require('../../wamp/msgs'),
+  isGlobal= require('../../util/is-global'),
   makeProperty= require('../../util/make-property'),
   mixin= require('../../util/mixin'),
-  isGlobal= require('../../util/is-global'),
   FetchResponse= require('../response')
 
 module.exports= Response
 
 function Response(o){
-	var self = isGlobal(this) ? mixiner(o) : mixiner(this, o)
-	msgs.Call.mixin(self)
-	return self
+	if(this instanceof Response){
+		msgs.Result.mixin(this)
+		mixiner(this, o)
+		return this
+	}else{
+		o= o|| {}
+		msgs.Result.mixin(o)
+		mixiner(o)
+		return o
+	}
+
 }
 
 Response.prototype= Object.create(FetchResponse.prototype)
@@ -26,4 +34,4 @@ Response.prototype.clone= (function clone(){
 })
 
 var mixiner= mixin(Response.prototype)
-Response.mixin= mixiner
+Response.mixin= Response
