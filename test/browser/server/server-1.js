@@ -4,7 +4,8 @@ var tape= require("blue-tape")
 var http= require("wmx/http-server"),
   Welcomer= require("../router/welcomer"),
   CrossDoc= require("../pipe/cross-document"),
-  Request= require("wmx/fetch/response")
+  Request= require("wmx/fetch/request"),
+  ArrayWriter= require("wmx/wamp/array-writer")
 
 tape("Server", function(t){
 
@@ -32,5 +33,9 @@ tape("Server", function(t){
 	var request= Request({
 		url: "//ping"
 	})
+	console.log('send:'+Object.keys(request).join(':'))
+	var reqArr= ArrayWriter(request);
+	console.log('arr:'+JSON.stringify(reqArr));
 	welcomerPair.channel.port2.postMessage(request)
+	console.log('sent')
 })

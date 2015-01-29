@@ -35,9 +35,12 @@ enum RequestCredentials { "omit", "same-origin", "include" };
 
 module.exports= Request
 
-function Request(){
+function Request(o){
 	return isGlobal(this) ? mixiner(o) : mixiner(this, o)
 }
+
+Request.prototype= Object.create(Body.prototype)
+Request.prototype.constructor= Request
 
 Request.Fields= ['method', 'url', 'headers', 'referrer', 'mode', 'credentials']
 

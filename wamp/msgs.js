@@ -25,7 +25,9 @@ function msg(name, messageType, fields, fieldTypes, flags){
 	}
 
 	fn.mixin= function(o){
+		console.log('m1')
 		if(!(o instanceof fn)){
+			console.log('m2')
 			o.messageType= messageType
 			for(var i in fieldTypes){
 				var fieldType= fieldTypes[i]

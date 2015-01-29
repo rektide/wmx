@@ -2,42 +2,18 @@
 
 var msgs= require('../../wamp/msgs'),
   makeProperty= require('../../util/make-property'),
+  mixin= require('../../util/mixin'),
+  isGlobal= require('../../util/is-global'),
   FetchRequest= require('../request')
 
 module.exports= Request
 
-function Request(){
-	return this
+function Request(o){
+	return isGlobal(this) ? mixiner(o) : mixiner(this, o)
 }
 
-Request.mixin= (function mixin(o){
-	var divert= {}
-	for(var i in FetchRequest.Fields){
-		var name= FetchRequest.Fields[i]
-		if(o[name] !== undefined){
-			divert[name]= o[name]
-			delete o[name]
-		}
-	}
-
-	if(!(o instanceof Request)){
-		var names= Object.getOwnPropertyNames(Request.prototype)
-		for(var i in names){
-			var name = names[i]
-			if(o[name] === undefined){
-				var descriptor = Object.getOwnPropertyDescriptor(Request.prototype, name)
-				Object.defineProperty(o, name, descriptor)
-			}
-		}
-	}
-	FetchRequest.mixin(this)
-	msgs.Call.mixin(o)
-
-	for(var i in divert){
-		o[i]= divert[i]
-	}
-	return o
-})
+Request.prototype= Object.create(FetchRequest.prototype)
+Request.prototype.constructor= Request
 
 Object.defineProperty(Request.prototype, 'method', makeProperty('this.options.method', {
 	set: function(val){
@@ -56,10 +32,8 @@ Object.defineProperty(Request.prototype, 'mode', makeProperty('this.options.mode
 Object.defineProperty(Request.prototype, 'credentials', makeProperty('this.options.credentials', {default: '"same-origin"'}))
 
 Request.prototype.clone= (function clone(){
-	var newReq= new Request()
-	for(var i in msgs.Call.fields){
-		var field= msgs.Call.fields[i]
-		newReq[field]= this[field]
-	}
-	return newReq
+	return new Request(this)
 })
+
+var mixiner= mixin(Request.prototype)
+Request.mixin= mixiner

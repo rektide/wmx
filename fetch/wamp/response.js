@@ -2,52 +2,28 @@
 
 var msgs= require('../../wamp/msgs'),
   makeProperty= require('../../util/make-property'),
+  mixin= require('../../util/mixin'),
+  isGlobal= require('../../util/is-global'),
   FetchResponse= require('../response')
 
 module.exports= Response
 
-function Response(){
-	return this
+function Response(o){
+	var self = isGlobal(this) ? mixiner(o) : mixiner(this, o)
+	msgs.Call.mixin(self)
+	return self
 }
 
-Response.mixin= (function mixin(o){
-	var divert= {}
-	for(var i in FetchResponse.Fields){
-		var name= FetchResponse.Fields[i]
-		if(o[name] !== undefined){
-			divert[name]= o[name]
-			delete o[name]
-		}
-	}
-
-	if(!(o instanceof Response)){
-		var names= Object.getOwnPropertyNames(Response.prototype)
-		for(var i in names){
-			var name = names[i]
-			if(o[name] === undefined){
-				var descriptor = Object.getOwnPropertyDescriptor(Response.prototype, name)
-				Object.defineProperty(o, name, descriptor)
-			}
-		}
-	}
-	FetchResponse.mixin(this)
-	msgs.Result.mixin(o)
-
-	for(var i in divert){
-		o[i]= divert[i]
-	}
-	return o
-})
+Response.prototype= Object.create(FetchResponse.prototype)
+Response.prototype.constructor= Response
 
 Object.defineProperty(Response.prototype, 'url', makeProperty('this.details.url'))
 Object.defineProperty(Response.prototype, 'status', makeProperty('this.details.status'))
 Object.defineProperty(Response.prototype, 'headers', makeProperty('this.details.headers'))
 
 Response.prototype.clone= (function clone(){
-	var newReq= new Response()
-	for(var i in msgs.Call.fields){
-		var field= msgs.Call.fields[i]
-		newReq[field]= this[field]
-	}
-	return newReq
+	return new Response(this)
 })
+
+var mixiner= mixin(Response.prototype)
+Response.mixin= mixiner
