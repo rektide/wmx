@@ -3,13 +3,17 @@ var msgs= require("./msgs")
 var byId= {}
 for(var i in msgs){
 	var msg= msgs[i],
-	  line= ["return [o.messageType"],
+	  line= msg.vargs ? ["return o.arguments ? [", msg.messageType] : ["return [",msg.messageType],
 	  j= 0
-	for(; j< msg.fields.length; ++j){
-		line.push(",o.",msg.fields[j])
+	function writeFields(){
+		for(j= 0; j< msg.fields.length; ++j){
+			line.push(",o.",msg.fields[j])
+		}
 	}
+	writeFields()
 	if(msg.vargs){
-		line.push(",o.arguments,o.argumentsKw")
+		line.push(",o.arguments,o.argumentsKw] : [o.messageType")
+		writeFields()
 	}
 	line.push("]")
 	var fn= Function("o", line.join(""))

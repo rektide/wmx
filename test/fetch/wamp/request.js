@@ -3,14 +3,19 @@ var _= require('lodash'),
   msgs= require('wmx/wamp/msgs'),
   Request= require('wmx/fetch/wamp/request')
 
-tape('wamp request base use', function(t){
-	var inp= {
+var fixture= module.exports= function(){
+	return {
 		method: 'post',
 		url: 'http://yoyodyne.net/wampterific',
 		headers: {
 			'x-magic': 42
 		}
 	}
+
+}
+
+tape('wamp request base use', function(t){
+	var inp= fixture()
 	var req= _.clone(inp)
 	Request.mixin(req)
 
